@@ -2,123 +2,181 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Obsidian Trace HUD - Mobile Ready</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Obsidian Trace HUD</title>
     <style>
         :root {
             --plasma-core: #ffffff;
-            --plasma-blue: #00d2ff;
-            --plasma-purple: #9d50bb;
-            --glass: rgba(5, 5, 8, 0.98);
+            --plasma-cyan: #00f2ff;
+            --plasma-purple: #9d00ff;
+            --glass: rgba(5, 5, 8, 0.96);
+            --btn-glow: rgba(0, 242, 255, 0.3);
         }
 
         body, html { 
             margin: 0; padding: 0; height: 100%; width: 100%; 
             background: #000; color: #fff; 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
             display: flex; flex-direction: row; overflow: hidden; 
         }
 
-        /* --- RESPONSIVE SIDEBAR --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             width: 380px; height: 100vh;
-            background: var(--glass); backdrop-filter: blur(50px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--glass); backdrop-filter: blur(40px);
+            border-right: 1px solid rgba(0, 242, 255, 0.15);
             padding: 40px; z-index: 100; box-sizing: border-box;
-            display: flex; flex-direction: column; overflow-y: auto;
+            display: flex; flex-direction: column;
         }
 
-        .logo-area { height: 60px; margin-bottom: 30px; display: flex; align-items: center; }
+        .logo-area { height: 60px; margin-bottom: 40px; display: flex; align-items: center; }
         .main-logo { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        .info-block { margin-top: 20px; opacity: 0.4; transition: 0.4s ease; }
-        .info-block.active { opacity: 1; transform: translateX(10px); }
-        .label { color: #888; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
-        .value { font-size: 1rem; font-weight: 300; margin-top: 5px; color: #fff; line-height: 1.4; }
+        .info-block { margin-top: 30px; opacity: 0.1; transform: translateX(-15px); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
+        .info-block.active { opacity: 1; transform: translateX(0); }
 
-        /* --- STAGE --- */
+        .label { color: var(--plasma-cyan); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 800; margin-bottom: 2px; }
+        .sub-label { color: #666; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block; }
+        .value { font-size: 1.1rem; font-weight: 300; color: #fff; line-height: 1.4; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+
+        /* --- STAGE & PLASMA --- */
         .stage { flex-grow: 1; position: relative; background: #000; overflow: hidden; }
-        .bg-img { width: 100%; height: 100%; object-fit: cover; position: absolute; opacity: 0.8; }
+        .bg-img { width: 100%; height: 100%; object-fit: cover; position: absolute; opacity: 0.5; }
 
-        /* PLASMA OVERLAY */
         svg.overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
-        
-        .plasma-group { opacity: 0; transition: opacity 0.2s ease; }
+        .plasma-group { opacity: 0; transition: opacity 0.3s ease; }
         .active-group { opacity: 1 !important; }
 
-        .p-outer { stroke: var(--plasma-purple); stroke-width: 8; filter: blur(4px) url(#precision-plasma); fill: none; opacity: 0.7; }
-        .p-mid   { stroke: var(--plasma-blue);   stroke-width: 3;  filter: url(#precision-plasma); fill: none; }
-        .p-core  { stroke: var(--plasma-core);  stroke-width: 1; filter: url(#precision-plasma); fill: none; }
+        /* CYAN & PURPLE PLASMA SPECTRA */
+        .p-outer { stroke: var(--plasma-purple); stroke-width: 15; filter: blur(10px) url(#precision-plasma); fill: none; opacity: 0.8; }
+        .p-mid   { stroke: var(--plasma-cyan);   stroke-width: 5;  filter: url(#precision-plasma); fill: none; }
+        .p-core  { stroke: var(--plasma-core);  stroke-width: 1.5; filter: url(#precision-plasma); fill: none; }
 
         .hotspot { fill: transparent; cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
 
-        /* --- MOBILE ADAPTATION (Media Queries) --- */
-        @media (max-width: 768px) {
-            body, html { flex-direction: column; overflow-y: auto; }
-            
-            .sidebar { 
-                width: 100%; height: auto; min-height: 40vh; 
-                margin: 0; border-right: none; border-top: 1px solid rgba(255, 255, 255, 0.1);
-                order: 2; /* Sidebar moves to bottom */
-                padding: 30px; border-radius: 20px 20px 0 0;
-            }
-
-            .stage { 
-                width: 100%; height: 60vh; 
-                order: 1; /* Image stays on top */
-                flex-shrink: 0;
-            }
-
-            .info-block { margin-top: 15px; }
-            .info-block.active { transform: translateY(-5px); } /* Slide up instead of right on mobile */
+        /* --- CHARGING WAVE BUTTONS --- */
+        .action-container {
+            position: fixed; bottom: 30px; left: 30px; 
+            display: flex; flex-direction: column; gap: 15px; z-index: 200;
         }
 
-        /* SVG Filters */
+        .wave-btn {
+            position: relative; width: 240px; height: 55px;
+            background: rgba(0, 242, 255, 0.05); 
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 4px; overflow: hidden; 
+            display: flex; align-items: center; padding: 0 20px;
+            color: #fff; text-decoration: none; font-size: 0.8rem;
+            letter-spacing: 2px; font-weight: 700; text-transform: uppercase;
+            transition: 0.3s ease;
+        }
+
+        /* The "Charging" Liquid Wave */
+        .wave-btn .liquid {
+            position: absolute; top: 100%; left: 0; width: 100%; height: 100%;
+            background: var(--plasma-cyan); opacity: 0.3;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
+        }
+
+        .wave-btn::after {
+            content: ""; position: absolute; top: -150%; left: -50%; width: 200%; height: 300%;
+            background: rgba(255,255,255,0.05); border-radius: 40%;
+            animation: rotateWave 6s infinite linear; pointer-events: none;
+        }
+
+        .wave-btn:hover .liquid { transform: translateY(-100%); }
+        .wave-btn:hover { border-color: var(--plasma-cyan); box-shadow: 0 0 20px var(--btn-glow); }
+
+        .btn-content { position: relative; z-index: 2; display: flex; align-items: center; }
+        .btn-icon { width: 22px; height: 22px; margin-right: 15px; filter: drop-shadow(0 0 5px var(--plasma-cyan)); }
+
+        @keyframes rotateWave {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            body, html { flex-direction: column; }
+            .sidebar { width: 100%; height: 50vh; order: 2; border-top: 1px solid var(--plasma-cyan); border-radius: 20px 20px 0 0; padding: 30px; }
+            .stage { width: 100%; height: 50vh; order: 1; }
+            .action-container { bottom: auto; top: 20px; left: 20px; scale: 0.85; transform-origin: top left; }
+        }
+
         #precision-plasma { x: -20%; y: -20%; width: 140%; height: 140%; }
     </style>
 </head>
 <body>
 
+<div class="action-container">
+    <a href="https://notion.so" target="_blank" class="wave-btn">
+        <div class="liquid"></div>
+        <div class="btn-content">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" class="btn-icon" alt="Notion">
+            More Resources
+        </div>
+    </a>
+    <a href="https://t.me" target="_blank" class="wave-btn">
+        <div class="liquid"></div>
+        <div class="btn-content">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="btn-icon" alt="Telegram">
+            Need Help?
+        </div>
+    </a>
+</div>
+
 <div class="sidebar">
     <div class="logo-area">
-        <img src="logo.png" alt="Logo" class="main-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<h2 style=color:white;letter-spacing:4px>SYSTEM</h2>'">
+        <img src="logo.png" alt="Logo" class="main-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<h2 style=color:var(--plasma-cyan);letter-spacing:4px>SYSTEM</h2>'">
     </div>
-    <div class="info-block" id="b1"><div class="label">Identification</div><div class="value" id="v1">Tap Item to Scan...</div></div>
-    <div class="info-block" id="b2"><div class="label">Connectivity</div><div class="value" id="v2">-</div></div>
-    <div class="info-block" id="b3"><div class="label">System Specs</div><div class="value" id="v3">-</div></div>
-    <div class="info-block" id="b4"><div class="label">Installation</div><div class="value" id="v4">-</div></div>
+    
+    <div class="info-block" id="b1">
+        <div class="label">Part Name</div>
+        <span class="sub-label">Amount Included</span>
+        <div class="value" id="v1">Scan to Identify...</div>
+    </div>
+    
+    <div class="info-block" id="b2">
+        <div class="label">Connected To</div>
+        <div class="value" id="v2">-</div>
+    </div>
+    
+    <div class="info-block" id="b3">
+        <div class="label">Description</div>
+        <div class="value" id="v3">-</div>
+    </div>
+    
+    <div class="info-block" id="b4">
+        <div class="label">Tools Need</div>
+        <div class="value" id="v4">-</div>
+    </div>
 </div>
 
 <div class="stage" id="main-stage">
-    <img src="asa.jpeg" class="bg-img">
+    <img src="asa.jpeg" class="bg-img" alt="Scanning Area">
     
     <svg class="overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none">
         <defs>
             <filter id="precision-plasma">
-                <feTurbulence type="fractalNoise" baseFrequency="0.05 0.2" numOctaves="3" result="noise">
-                    <animate attributeName="seed" from="1" to="100" dur="0.8s" repeatCount="indefinite"/>
+                <feTurbulence type="fractalNoise" baseFrequency="0.04 0.12" numOctaves="3" result="noise">
+                    <animate attributeName="seed" from="1" to="100" dur="0.5s" repeatCount="indefinite"/>
                 </feTurbulence>
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="22" />
             </filter>
         </defs>
 
-        <g id="spark-toolbox" class="plasma-group">
+        <g id="part-01" class="plasma-group">
             <path class="p-outer" d="M385,260 Q382,270 382,300 L382,510 Q385,535 410,535 L735,535 Q755,535 758,510 L758,300 Q758,260 740,260 L410,260 Z" />
             <path class="p-mid"   d="M385,260 Q382,270 382,300 L382,510 Q385,535 410,535 L735,535 Q755,535 758,510 L758,300 Q758,260 740,260 L410,260 Z" />
             <path class="p-core"  d="M385,260 Q382,270 382,300 L382,510 Q385,535 410,535 L735,535 Q755,535 758,510 L758,300 Q758,260 740,260 L410,260 Z" />
         </g>
         <path class="hotspot" d="M380,255 L760,255 L760,540 L380,540 Z" 
-              data-target="spark-toolbox" data-name="TRUPER CORE" data-conn="CENTRAL ARRAY" 
-              data-desc="Master unit chassis for spark generation assembly." data-tools="N/A" />
-
-        <g id="spark-case" class="plasma-group">
-            <path class="p-outer" d="M508,438 L630,438 L630,528 L508,528 Z" />
-            <path class="p-mid"   d="M508,438 L630,438 L630,528 L508,528 Z" />
-            <path class="p-core"  d="M508,438 L630,438 L630,528 L508,528 Z" />
-        </g>
-        <rect class="hotspot" x="500" y="430" width="140" height="110" 
-              data-target="spark-case" data-name="SPARK ISOLATION GAP" data-conn="PRIMARY TRIGGER" 
-              data-desc="High-voltage isolation terminal with protective clear housing." data-tools="Precision Kit" />
+              data-target="part-01" 
+              data-name="TRUPER CORE UNIT (x2)" 
+              data-conn="PRIMARY JUNCTION BOX" 
+              data-desc="Central spark suppression module for the trace assembly." 
+              data-tools="H5 Hex Key, 12mm Wrench" />
     </svg>
 </div>
 
@@ -131,31 +189,36 @@
         blocks.forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.plasma-group').forEach(p => p.classList.remove('active-group'));
 
-        // Set new
+        // Inject Data
         document.getElementById('v1').innerText = hs.dataset.name;
         document.getElementById('v2').innerText = hs.dataset.conn;
         document.getElementById('v3').innerText = hs.dataset.desc;
         document.getElementById('v4').innerText = hs.dataset.tools;
-        blocks.forEach(b => b.classList.add('active'));
-        document.getElementById(hs.dataset.target).classList.add('active-group');
+
+        // Animate Appearance
+        setTimeout(() => {
+            blocks.forEach((b, i) => {
+                setTimeout(() => b.classList.add('active'), i * 80);
+            });
+            const target = document.getElementById(hs.dataset.target);
+            if(target) target.classList.add('active-group');
+        }, 50);
     }
 
     hotspots.forEach(hs => {
-        // Desktop Hover
         hs.addEventListener('mouseenter', () => activate(hs));
-        
-        // Mobile Touch (Ensures it works on cellphones)
         hs.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Prevent double triggering
+            e.preventDefault();
             activate(hs);
         });
     });
 
-    // Tap on background to clear (Best practice for mobile UX)
+    // Reset on background tap
     document.getElementById('main-stage').addEventListener('touchstart', (e) => {
         if (e.target.classList.contains('bg-img')) {
             blocks.forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.plasma-group').forEach(p => p.classList.remove('active-group'));
+            document.getElementById('v1').innerText = "Scan to Identify...";
         }
     });
 </script>
