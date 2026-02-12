@@ -33,12 +33,11 @@
             position: relative;
         }
 
-        /* --- THE RESTORED PLASMA BEAM --- */
         .sidebar::after {
             content: '';
             position: absolute;
             top: 0;
-            right: -1px; /* Perfectly on the edge */
+            right: -1px;
             width: 2px;
             height: 100%;
             background: linear-gradient(to bottom, 
@@ -54,7 +53,6 @@
             pointer-events: none;
         }
 
-        /* Active state for the Beam */
         .sidebar.active-edge::after {
             opacity: 1;
             animation: traceFlow 2s linear infinite;
@@ -207,10 +205,11 @@
     const inspectBox = document.getElementById('inspect-container');
     
     let isLocked = false;
+    let lastTap = 0; // For double tap detection
 
     function activate(hs) {
         hudSvg.classList.add('active-view');
-        sidebar.classList.add('active-edge'); // RESTORED BEAM
+        sidebar.classList.add('active-edge');
         bgPhoto.style.opacity = "0.8";
         document.getElementById('v1').innerText = hs.dataset.name;
         blocks[0].querySelector('.sub-label').innerText = hs.dataset.amt;
@@ -226,7 +225,7 @@
     function deactivate() {
         if (isLocked) return;
         hudSvg.classList.remove('active-view');
-        sidebar.classList.remove('active-edge'); // HIDE BEAM
+        sidebar.classList.remove('active-edge');
         bgPhoto.style.opacity = "0.4";
         blocks.forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.plasma-group').forEach(p => p.classList.remove('active-group'));
@@ -234,28 +233,61 @@
     }
 
     hotspots.forEach(hs => {
+        // PC: Hover behavior
         hs.addEventListener('mouseenter', () => { if(!isLocked) activate(hs); });
         hs.addEventListener('mouseleave', deactivate);
+        
+        // PC: Click to lock
         hs.addEventListener('click', (e) => {
-            e.stopPropagation();
-            isLocked = true;
-            activate(hs);
-            inspectBox.classList.add('visible');
+            if (window.innerWidth > 768) {
+                e.stopPropagation();
+                isLocked = true;
+                activate(hs); 
+                inspectBox.classList.add('visible');
+            }
         });
+
+        // Mobile: Single Tap (Preview) / Double Tap (Lock)
         hs.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            isLocked = true;
-            activate(hs);
-            inspectBox.classList.add('visible');
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            
+            if (tapLength < 300 && tapLength > 0) {
+                // Double Tap Logic
+                isLocked = true;
+                activate(hs);
+                inspectBox.classList.add('visible');
+                e.preventDefault(); // Prevent zoom
+            } else {
+                // Single Tap Logic (Temporal)
+                if(!isLocked) activate(hs);
+            }
+            lastTap = currentTime;
         }, {passive: false});
+
+        hs.addEventListener('touchend', () => {
+            // If not double-tapped/locked, clear on finger lift
+            if (!isLocked) {
+                setTimeout(deactivate, 100);
+            }
+        });
     });
 
-    document.body.addEventListener('click', (e) => {
+    // Reset lock on background interaction
+    const resetInteraction = (e) => {
         if (!e.target.closest('.hotspot') && !e.target.closest('.sidebar')) {
             isLocked = false;
             deactivate();
         }
-    });
+    };
+
+    document.body.addEventListener('click', resetInteraction);
+    document.body.addEventListener('touchstart', (e) => {
+        if (!e.target.closest('.hotspot') && !e.target.closest('.sidebar')) {
+            isLocked = false;
+            deactivate();
+        }
+    }, {passive: true});
 </script>
 </body>
 </html>
