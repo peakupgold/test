@@ -34,98 +34,76 @@
         }
 
         .sidebar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: -1px;
-            width: 2px;
-            height: 100%;
-            background: linear-gradient(to bottom, 
-                transparent, 
-                var(--plasma-cyan), 
-                var(--plasma-purple), 
-                var(--plasma-cyan), 
-                transparent);
-            background-size: 100% 200%;
-            opacity: 0;
-            filter: blur(2px) brightness(1.5);
-            transition: opacity 0.4s ease;
-            pointer-events: none;
+            content: ''; position: absolute; top: 0; right: -1px; width: 2px; height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--plasma-cyan), var(--plasma-purple), var(--plasma-cyan), transparent);
+            background-size: 100% 200%; opacity: 0; filter: blur(2px) brightness(1.5);
+            transition: opacity 0.4s ease; pointer-events: none;
         }
 
-        .sidebar.active-edge::after {
-            opacity: 1;
-            animation: traceFlow 2s linear infinite;
-        }
-
-        @keyframes traceFlow {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 0% 200%; }
-        }
+        .sidebar.active-edge::after { opacity: 1; animation: traceFlow 2s linear infinite; }
+        @keyframes traceFlow { 0% { background-position: 0% 0%; } 100% { background-position: 0% 200%; } }
 
         .logo-area { height: 60px; margin-bottom: 40px; display: flex; align-items: center; flex-shrink: 0; }
         .main-logo { max-width: 100%; max-height: 100%; object-fit: contain; }
 
         .drawer-content { flex-grow: 1; overflow-y: auto; overflow-x: hidden; }
-
         .info-block { margin-top: 25px; display: flex; flex-direction: column; align-items: flex-start; }
-        .label { 
-            color: var(--plasma-cyan); font-family: var(--title-font); font-size: 0.85rem; 
-            text-transform: uppercase; letter-spacing: 2px; font-weight: 700; 
-            margin-bottom: 6px; opacity: 0.35; transition: all 0.3s ease; 
-        }
+        .label { color: var(--plasma-cyan); font-family: var(--title-font); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 6px; opacity: 0.35; transition: all 0.3s ease; }
         
-        .sub-label, .value { 
-            font-family: var(--mono-font); opacity: 0; visibility: hidden; transform: translateY(5px); 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            width: 100%; word-wrap: break-word; overflow-wrap: break-word; 
-        }
+        .sub-label, .value { font-family: var(--mono-font); opacity: 0; visibility: hidden; transform: translateY(5px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; word-wrap: break-word; overflow-wrap: break-word; }
         .sub-label { color: var(--sub-grey); font-size: 0.62rem; margin-bottom: 4px; }
         .value { font-size: 0.88rem; color: #eee; line-height: 1.5; }
 
         .info-block.active .label { opacity: 1; text-shadow: 0 0 10px rgba(0, 210, 255, 0.4); }
         .info-block.active .sub-label, .info-block.active .value { opacity: 1; visibility: visible; transform: translateY(0); }
 
-        /* --- SLOW INSPECT BUTTON --- */
+        /* --- INSPECT BUTTON --- */
         #inspect-container { height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease; }
         #inspect-container.visible { height: 50px; opacity: 1; margin-top: 30px; }
-
         .inspect-btn {
-            width: 100%; height: 40px; 
-            background: rgba(0, 210, 255, 0.05);
+            width: 100%; height: 40px; background: rgba(0, 210, 255, 0.05);
             border: 1px solid rgba(0, 210, 255, 0.4); color: var(--plasma-cyan);
             font-family: var(--title-font); font-weight: 700; font-size: 0.8rem;
             text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
-            position: relative; overflow: hidden;
-            transition: 0.3s; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
-
         .inspect-btn::before {
             content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
             background: linear-gradient(to right, transparent, rgba(0, 210, 255, 0.25), transparent);
             transform: skewX(-25deg); animation: lightSweep 4s infinite linear;
         }
-
         @keyframes lightSweep { 0% { left: -150%; } 100% { left: 150%; } }
-
         .inspect-btn:hover { background: var(--plasma-cyan); color: #000; box-shadow: 0 0 30px var(--plasma-cyan); border-color: var(--plasma-cyan); }
 
         /* --- ACTION BUTTONS --- */
         .action-container { display: flex; flex-direction: column; gap: 12px; margin-top: auto; padding-top: 30px; }
-        .wave-btn { 
-            position: relative; width: 100%; max-width: 240px; height: 48px; background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; display: flex; 
-            align-items: center; padding: 0 18px; color: #fff; text-decoration: none; font-size: 0.75rem; 
-            letter-spacing: 1px; font-family: var(--title-font); font-weight: 700; text-transform: uppercase; transition: 0.3s; 
-        }
+        .wave-btn { position: relative; width: 100%; max-width: 240px; height: 48px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; display: flex; align-items: center; padding: 0 18px; color: #fff; text-decoration: none; font-size: 0.75rem; letter-spacing: 1px; font-family: var(--title-font); font-weight: 700; text-transform: uppercase; transition: 0.3s; }
         .wave-btn .liquid { position: absolute; top: 100%; left: 0; width: 100%; height: 100%; background: var(--plasma-cyan); opacity: 0.2; transition: transform 0.5s ease; z-index: 0; }
         .wave-btn:hover .liquid { transform: translateY(-100%); }
         .btn-content { position: relative; z-index: 2; display: flex; align-items: center; }
         .btn-icon { width: 18px; height: 18px; margin-right: 12px; }
 
-        /* --- STAGE --- */
+        /* --- STAGE & ENERGY TRANSITION --- */
         .stage { flex-grow: 1; position: relative; background: #000; overflow: hidden; }
-        .bg-img { width: 100%; height: 100%; object-fit: cover; position: absolute; opacity: 0.4; transition: opacity 0.4s ease; }
+        .bg-img { width: 100%; height: 100%; object-fit: cover; position: absolute; opacity: 0.4; transition: opacity 0.5s ease; }
+        #inspect-photo { opacity: 0; pointer-events: none; transform: scale(1.05); transition: opacity 0.8s ease, transform 1.2s ease; }
+        #inspect-photo.viewing { opacity: 0.8; transform: scale(1); }
+
+        /* Cyan Energy Wipe */
+        .energy-wipe {
+            position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, var(--plasma-cyan), #fff, var(--plasma-cyan), transparent);
+            z-index: 70; opacity: 0; pointer-events: none;
+        }
+
+        .surge-active { animation: surgeEffect 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards; opacity: 1; }
+
+        @keyframes surgeEffect {
+            0% { left: -100%; filter: blur(5px); }
+            50% { opacity: 1; filter: blur(2px); }
+            100% { left: 100%; opacity: 0; filter: blur(10px); }
+        }
+
         svg.overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; opacity: 0; transition: opacity 0.3s ease; }
         svg.overlay.active-view { opacity: 1; }
         .plasma-group { opacity: 0; visibility: hidden; transition: opacity 0.2s ease; }
@@ -140,11 +118,7 @@
             body, html { flex-direction: column; }
             .sidebar { width: 100%; height: 55vh; order: 2; padding: 25px 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px 24px 0 0; border-right: none; }
             .sidebar::after { width: 100%; height: 2px; top: -1px; left: 0; right: 0; background: linear-gradient(to right, transparent, var(--plasma-cyan), var(--plasma-purple), var(--plasma-cyan), transparent); background-size: 200% 100%; }
-            .sidebar.active-edge::after { animation: traceFlowMobile 2s linear infinite; }
-            @keyframes traceFlowMobile { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
             .stage { width: 100%; height: 45vh; order: 1; flex-shrink: 0; }
-            .action-container { padding-top: 15px; flex-direction: row; gap: 10px; }
-            .wave-btn { max-width: none; width: 100%; height: 42px; font-size: 0.65rem; }
         }
     </style>
 </head>
@@ -159,7 +133,7 @@
         <div class="info-block" id="b2"><div class="label">Description</div><div class="value" id="v2">-</div></div>
         <div class="info-block" id="b3"><div class="label">Connected To</div><div class="value" id="v3">-</div></div>
         <div class="info-block" id="b4"><div class="label">Tools Need</div><div class="value" id="v4">-</div></div>
-        <div id="inspect-container"><button class="inspect-btn">Inspect Part</button></div>
+        <div id="inspect-container"><button class="inspect-btn" id="inspect-trigger">Inspect Part</button></div>
     </div>
     <div class="action-container">
         <a href="#" class="wave-btn"><div class="liquid"></div><div class="btn-content"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" class="btn-icon"> Resources</div></a>
@@ -169,6 +143,9 @@
 
 <div class="stage" id="main-stage">
     <img src="asa.jpeg" class="bg-img" id="bg-photo">
+    <img src="inspect_main.jpg" class="bg-img" id="inspect-photo">
+    <div class="energy-wipe" id="wipe-element"></div>
+
     <svg class="overlay" id="hud-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
         <defs>
             <filter id="precision-plasma"><feTurbulence baseFrequency="0.04 0.15" numOctaves="3"><animate attributeName="seed" from="1" to="100" dur="0.8s" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" scale="8"/></filter>
@@ -179,7 +156,14 @@
             <path class="p-mid" d="M385,260 Q382,270 382,300 L382,510 Q385,535 410,535 L735,535 Q755,535 758,510 L758,300 Q758,260 740,260 L410,260 Z" />
             <path class="p-core" d="M385,260 Q382,270 382,300 L382,510 Q385,535 410,535 L735,535 Q755,535 758,510 L758,300 Q758,260 740,260 L410,260 Z" />
         </g>
-        <path class="hotspot" d="M380,255 L760,255 L760,540 L380,540 Z" 
+        
+        <g id="target-psu" class="plasma-group">
+            <rect class="p-outer" x="195" y="415" width="315" height="215" />
+            <rect class="p-mid" x="195" y="415" width="315" height="215" />
+            <rect class="p-core" x="195" y="415" width="315" height="215" />
+        </g>
+
+        <path class="hotspot main-hotspot" d="M380,255 L760,255 L760,540 L380,540 Z" 
               data-target="target-machine" data-name="Main Machine (base unit)" data-amt="1 Unit" 
               data-desc="Primary device body; houses controls and core electronics" 
               data-conn="Wall outlet (via pedal + power cable), coil" data-tools="None (unboxing: box cutter/scissors)" />
@@ -189,10 +173,15 @@
             <path class="p-mid" d="M508,438 L630,438 L630,528 L508,528 Z" />
             <path class="p-core" d="M508,438 L630,438 L630,528 L508,528 Z" />
         </g>
-        <rect class="hotspot" x="500" y="430" width="140" height="110" 
+        <rect class="hotspot main-hotspot" x="500" y="430" width="140" height="110" 
               data-target="target-gap" data-name="Spark gap box" data-amt="1 Housing Assembly" 
-              data-desc="Protective housing containing the electrode bolts. Keeps electrodes shielded and stable." 
+              data-desc="It keeps the spark gap shielded, aligned, and mechanically stable, and allows controlled access for inspection, cleaning, and precise gap calibration when needed." 
               data-conn="Tank capacitor, coil circuit (Inside Toolbox path)" data-tools="Feeler gauge set (for gap setting)" />
+
+        <rect class="hotspot inspect-hotspot" x="195" y="415" width="315" height="215" style="display:none;"
+              data-target="target-psu" data-name="Power supply" data-amt="1 Unit" 
+              data-desc="The included power supply converts your wall outlet power (110V or 220V AC) into stable 12V DC to power the TZLA Machine." 
+              data-conn="Internal Components" data-tools="None unless adviced by tech team" />
     </svg>
 </div>
 
@@ -202,10 +191,14 @@
     const sidebar = document.getElementById('main-sidebar');
     const hudSvg = document.getElementById('hud-svg');
     const bgPhoto = document.getElementById('bg-photo');
+    const inspectPhoto = document.getElementById('inspect-photo');
+    const wipe = document.getElementById('wipe-element');
+    const inspectTrigger = document.getElementById('inspect-trigger');
     const inspectBox = document.getElementById('inspect-container');
     
     let isLocked = false;
-    let lastTap = 0; // For double tap detection
+    let isInspecting = false;
+    let lastTap = 0;
 
     function activate(hs) {
         hudSvg.classList.add('active-view');
@@ -232,62 +225,68 @@
         inspectBox.classList.remove('visible');
     }
 
+    // Toggle Inspection View
+    inspectTrigger.addEventListener('click', () => {
+        if (isInspecting) return;
+        isInspecting = true;
+        wipe.classList.add('surge-active');
+        
+        setTimeout(() => {
+            bgPhoto.style.opacity = "0";
+            inspectPhoto.classList.add('viewing');
+            // Toggle Hotspots
+            document.querySelectorAll('.main-hotspot').forEach(h => h.style.display = 'none');
+            document.querySelectorAll('.inspect-hotspot').forEach(h => h.style.display = 'block');
+            isLocked = false;
+            deactivate();
+        }, 400);
+
+        setTimeout(() => { wipe.classList.remove('surge-active'); }, 800);
+    });
+
     hotspots.forEach(hs => {
-        // PC: Hover behavior
         hs.addEventListener('mouseenter', () => { if(!isLocked) activate(hs); });
         hs.addEventListener('mouseleave', deactivate);
-        
-        // PC: Click to lock
         hs.addEventListener('click', (e) => {
             if (window.innerWidth > 768) {
                 e.stopPropagation();
                 isLocked = true;
                 activate(hs); 
-                inspectBox.classList.add('visible');
+                if(!isInspecting) inspectBox.classList.add('visible');
             }
         });
 
-        // Mobile: Single Tap (Preview) / Double Tap (Lock)
         hs.addEventListener('touchstart', (e) => {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTap;
-            
-            if (tapLength < 300 && tapLength > 0) {
-                // Double Tap Logic
+            const now = Date.now();
+            if (now - lastTap < 300) {
                 isLocked = true;
                 activate(hs);
-                inspectBox.classList.add('visible');
-                e.preventDefault(); // Prevent zoom
-            } else {
-                // Single Tap Logic (Temporal)
-                if(!isLocked) activate(hs);
-            }
-            lastTap = currentTime;
-        }, {passive: false});
-
-        hs.addEventListener('touchend', () => {
-            // If not double-tapped/locked, clear on finger lift
-            if (!isLocked) {
-                setTimeout(deactivate, 100);
-            }
+                if(!isInspecting) inspectBox.classList.add('visible');
+            } else { if(!isLocked) activate(hs); }
+            lastTap = now;
         });
     });
 
-    // Reset lock on background interaction
-    const resetInteraction = (e) => {
+    document.body.addEventListener('click', (e) => {
         if (!e.target.closest('.hotspot') && !e.target.closest('.sidebar')) {
-            isLocked = false;
-            deactivate();
+            if(isInspecting) {
+                wipe.classList.add('surge-active');
+                setTimeout(() => {
+                    inspectPhoto.classList.remove('viewing');
+                    bgPhoto.style.opacity = "0.4";
+                    document.querySelectorAll('.main-hotspot').forEach(h => h.style.display = 'block');
+                    document.querySelectorAll('.inspect-hotspot').forEach(h => h.style.display = 'none');
+                    isInspecting = false;
+                    isLocked = false;
+                    deactivate();
+                }, 400);
+                setTimeout(() => wipe.classList.remove('surge-active'), 800);
+            } else {
+                isLocked = false;
+                deactivate();
+            }
         }
-    };
-
-    document.body.addEventListener('click', resetInteraction);
-    document.body.addEventListener('touchstart', (e) => {
-        if (!e.target.closest('.hotspot') && !e.target.closest('.sidebar')) {
-            isLocked = false;
-            deactivate();
-        }
-    }, {passive: true});
+    });
 </script>
 </body>
 </html>
